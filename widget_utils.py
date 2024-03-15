@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QPoint
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QListWidget, QListWidgetItem, QLabel
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QListWidget, QListWidgetItem, QLabel, QListView
 from pathlib import Path
 from PyQt5.QtGui import QTransform
 import time
@@ -93,5 +93,20 @@ class ItemList(ItemBasic):
 
 
 class BagList(ItemBasic):
-    def __init__(self, parent: QtWidgets.QWidget | None = None, mouse_track: bool = True):
+    def __init__(self, parent: QtWidgets.QWidget | None = None, mouse_track: bool = True, path: str = None):
         super().__init__(parent, mouse_track)
+        # self.setFlow(QListView.TopToBottom)
+        self.icon_h = 100
+        self.icon_w = 100
+        # self.setWrapping(True)
+        self.fill_blank(path)
+        self.setIconSize(QtCore.QSize(self.icon_w, self.icon_h))
+
+    def fill_blank(self, path):
+        pass
+        for i in range(63):
+            item = QListWidgetItem()
+            pixmap = QtGui.QPixmap(str(path)).scaled(self.icon_h, self.icon_w)
+            icon = QtGui.QIcon(pixmap)
+            item.setIcon(icon)
+            self.addItem(item)

@@ -24,6 +24,8 @@ from PyQt5.QtGui import QPixmap
 from pathlib import Path
 from widget_utils import ItemList, BagList
 
+BLANK_PATH = "./assets/blank.png"
+
 
 class LineUpSimulator(QMainWindow):
     def __init__(self, path: str = None, icon_size: list = [50, 50], **kwargs) -> None:
@@ -47,7 +49,7 @@ class LineUpSimulator(QMainWindow):
         self.item_list = ItemList(path=path, icon_size=icon_size)
 
         # * create Bag Qlist
-        self.bag_list = BagList()
+        self.bag_list = BagList(path=BLANK_PATH)
 
         # * add layout
         left_layout = QVBoxLayout()
