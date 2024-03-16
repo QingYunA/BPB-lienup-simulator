@@ -95,18 +95,41 @@ class ItemList(ItemBasic):
 class BagList(ItemBasic):
     def __init__(self, parent: QtWidgets.QWidget | None = None, mouse_track: bool = True, path: str = None):
         super().__init__(parent, mouse_track)
-        # self.setFlow(QListView.TopToBottom)
         self.icon_h = 100
         self.icon_w = 100
-        # self.setWrapping(True)
         self.fill_blank(path)
         self.setIconSize(QtCore.QSize(self.icon_w, self.icon_h))
 
     def fill_blank(self, path):
-        pass
         for i in range(63):
             item = QListWidgetItem()
             pixmap = QtGui.QPixmap(str(path)).scaled(self.icon_h, self.icon_w)
             icon = QtGui.QIcon(pixmap)
             item.setIcon(icon)
             self.addItem(item)
+
+
+class BagTable(QTableWidget):
+    def __init__(self, parent: QtWidgets.QWidget | None = None, path: str = None, icon_size: list = [60, 60]):
+        super().__init__()
+        self.icon_w, self.icon_h = icon_size
+        self.ratio = 1.1
+        self.setRowCount(7)
+        self.setColumnCount(9)
+        self.setShowGrid(False)
+        self.horizontalHeader().setVisible(False)
+        self.verticalHeader().setVisible(False)
+
+        # self.
+        self.fill_blank(path=path)
+
+    def fill_blank(self, path):
+        for i in range(7):
+            for j in range(9):
+                label = QLabel()
+                pixmap = QtGui.QPixmap(str(path)).scaled(self.icon_h, self.icon_w)
+                label.setPixmap(pixmap)
+                label.setAlignment(QtCore.Qt.AlignCenter)
+                self.setCellWidget(i, j, label)
+                self.setColumnWidth(j, int(self.icon_h * self.ratio))
+            self.setRowHeight(i, int(self.icon_h * self.ratio))

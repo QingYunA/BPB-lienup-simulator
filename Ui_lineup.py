@@ -22,7 +22,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QPixmap
 from pathlib import Path
-from widget_utils import ItemList, BagList
+from widget_utils import ItemList, BagList, BagTable
 
 BLANK_PATH = "./assets/blank.png"
 
@@ -32,8 +32,8 @@ class LineUpSimulator(QMainWindow):
         super().__init__()
         self.path = "./assets/"
         self.img_list = sorted(Path(path).glob("*.png"))
-        self.h = 1000
-        self.w = 1000
+        self.h = 800
+        self.w = 1100
         self.setObjectName("MainWindow")
         self.setMouseTracking(True)
         self.resize(self.w, self.h)
@@ -49,7 +49,7 @@ class LineUpSimulator(QMainWindow):
         self.item_list = ItemList(path=path, icon_size=icon_size)
 
         # * create Bag Qlist
-        self.bag_list = BagList(path=BLANK_PATH)
+        self.bag_list = BagTable(path=BLANK_PATH)
 
         # * add layout
         left_layout = QVBoxLayout()
