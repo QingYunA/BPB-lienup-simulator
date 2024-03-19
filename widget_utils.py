@@ -2,8 +2,22 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QPoint
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QListWidget, QListWidgetItem, QLabel, QListView
 from pathlib import Path
-from PyQt5.QtGui import QTransform
+from PyQt5.QtGui import QTransform, QDrag
 import time
+
+
+class DragQLabel(QLabel):
+    def __init__(self, pixmap: QtGui.QPixmap, parent: QtWidgets.QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.pixmap = pixmap
+
+    def mousePressEvent(self, e: QtGui.QMouseEvent) -> None:
+        # return super().mousePressEvent(e)
+        if e.button() == QtCore.Qt.LeftButton:
+            drag = QDrag(self)
+            mime_data = QtCore.QMimeData()
+            mime_data.setImageData(self.pixmap)
+            drag.exec_(QtCore.Qt.MoveAction, QtCore.Qt.CopyAction)
 
 
 class ItemBasic(QListWidget):
@@ -62,10 +76,13 @@ class ItemList(ItemBasic):
             self.left_right_button = True
             self.pixmap = self.pixmap.transformed(self.transform)
             self.copy_widget.setPixmap(self.pixmap)
-            self.left_right_button = False
             self.copy_widget.show()
+
+            # * after rotate resuming the original state
+            self.left_right_button = False
         if e.buttons() == QtCore.Qt.LeftButton and self.clicked_item:
             self.left_button = True
+
             self.copy_widget = QLabel(self)
             self.copy_widget.setPixmap(self.pixmap)
             self.copy_widget.setScaledContents(True)
@@ -95,12 +112,16 @@ class ItemList(ItemBasic):
 class BagList(ItemBasic):
     def __init__(self, parent: QtWidgets.QWidget | None = None, mouse_track: bool = True, path: str = None):
         super().__init__(parent, mouse_track)
-        self.icon_h = 100
-        self.icon_w = 100
+        # self.setFlow(QListView.TopToBottom)
+        self.icon_h = 65
+        self.icon_w = 65
+        # self.setWrapping(True)
         self.fill_blank(path)
         self.setIconSize(QtCore.QSize(self.icon_w, self.icon_h))
+        self.setAcceptDrops(True)
 
     def fill_blank(self, path):
+        pass
         for i in range(63):
             item = QListWidgetItem()
             pixmap = QtGui.QPixmap(str(path)).scaled(self.icon_h, self.icon_w)
@@ -108,28 +129,16 @@ class BagList(ItemBasic):
             item.setIcon(icon)
             self.addItem(item)
 
+    def dragEnterEvent(self, e: QtGui.QDragEnterEvent) -> None:
+        # return super().dragEnterEvent(e)
+        e.accept()
 
-class BagTable(QTableWidget):
-    def __init__(self, parent: QtWidgets.QWidget | None = None, path: str = None, icon_size: list = [60, 60]):
-        super().__init__()
-        self.icon_w, self.icon_h = icon_size
-        self.ratio = 1.1
-        self.setRowCount(7)
-        self.setColumnCount(9)
-        self.setShowGrid(False)
-        self.horizontalHeader().setVisible(False)
-        self.verticalHeader().setVisible(False)
-
-        # self.
-        self.fill_blank(path=path)
-
-    def fill_blank(self, path):
-        for i in range(7):
-            for j in range(9):
-                label = QLabel()
-                pixmap = QtGui.QPixmap(str(path)).scaled(self.icon_h, self.icon_w)
-                label.setPixmap(pixmap)
-                label.setAlignment(QtCore.Qt.AlignCenter)
-                self.setCellWidget(i, j, label)
-                self.setColumnWidth(j, int(self.icon_h * self.ratio))
-            self.setRowHeight(i, int(self.icon_h * self.ratio))
+    def dropEvent(self, event: QtGui.QDropEvent) -> None:
+        # return super().dropEvent(event)
+        # pos = event.pos()
+        # print(pos)
+        # event.accept()
+        image = event.mimeData().imageData()
+        label = QLabel(self)
+        label.setPixmap(QtGui.QPixmap(image))
+        label.show()
